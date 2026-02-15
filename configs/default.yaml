@@ -1,0 +1,88 @@
+# Default configuration for adaptive contrastive curriculum learning
+experiment_name: "adaptive_contrastive_mmlu"
+seed: 42
+
+# Model configuration
+model:
+  base_model: "bert-base-uncased"  # Changed from deberta-v3-base to avoid tokenizer dependency issues
+  hidden_dim: 768
+  projection_dim: 256
+  num_tasks: 57  # MMLU has 57 tasks
+  dropout: 0.1
+  freeze_base: false
+
+# Data configuration
+data:
+  dataset_name: "cais/mmlu"
+  subset: "all"
+  max_samples_per_task: 500  # For faster training, set to null for full dataset
+  train_split: 0.8
+  val_split: 0.1
+  test_split: 0.1
+  max_seq_length: 512
+  num_workers: 0  # Set to 0 to avoid multiprocessing issues; increase for faster loading
+
+# Curriculum learning configuration
+curriculum:
+  enabled: true
+  warmup_epochs: 2
+  strategy: "uncertainty_gradient"  # Options: uniform, difficulty, uncertainty_gradient
+  temperature: 2.0
+  update_frequency: 100  # Update task weights every N steps
+  min_task_weight: 0.1
+  max_task_weight: 3.0
+
+# Contrastive learning configuration
+contrastive:
+  enabled: true
+  temperature: 0.07
+  lambda_contrastive: 0.3  # Weight for contrastive loss
+  lambda_classification: 0.7  # Weight for classification loss
+  negative_samples: 4
+  inter_task_contrast: true
+
+# Training configuration
+training:
+  num_epochs: 10
+  batch_size: 16
+  gradient_accumulation_steps: 2
+  learning_rate: 0.00002  
+  weight_decay: 0.01
+  warmup_ratio: 0.1
+  max_grad_norm: 1.0
+  mixed_precision: true
+
+  # Learning rate scheduler
+  scheduler:
+    type: "cosine"  # Options: cosine, linear, constant
+    num_cycles: 0.5
+
+  # Early stopping
+  early_stopping:
+    enabled: true
+    patience: 3
+    min_delta: 0.001  
+    monitor: "val_accuracy"
+
+  # Checkpointing
+  checkpoint:
+    save_best: true
+    save_last: true
+    monitor: "val_accuracy"
+    mode: "max"
+
+# Evaluation configuration
+evaluation:
+  batch_size: 32
+  metrics:
+    - "accuracy"
+    - "f1_macro"
+    - "cross_domain_transfer"
+    - "task_confusion"
+
+# Logging
+logging:
+  log_interval: 50
+  use_mlflow: true
+  use_tensorboard: true
+  save_dir: "results"

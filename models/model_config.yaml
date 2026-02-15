@@ -1,0 +1,67 @@
+contrastive:
+  enabled: true
+  inter_task_contrast: true
+  lambda_classification: 0.7
+  lambda_contrastive: 0.3
+  negative_samples: 4
+  temperature: 0.07
+curriculum:
+  enabled: true
+  max_task_weight: 3.0
+  min_task_weight: 0.1
+  strategy: uncertainty_gradient
+  temperature: 2.0
+  update_frequency: 100
+  warmup_epochs: 2
+data:
+  dataset_name: cais/mmlu
+  max_samples_per_task: 500
+  max_seq_length: 512
+  num_workers: 0
+  subset: all
+  test_split: 0.1
+  train_split: 0.8
+  val_split: 0.1
+evaluation:
+  batch_size: 32
+  metrics:
+  - accuracy
+  - f1_macro
+  - cross_domain_transfer
+  - task_confusion
+experiment_name: adaptive_contrastive_mmlu
+logging:
+  log_interval: 50
+  save_dir: results
+  use_mlflow: true
+  use_tensorboard: true
+model:
+  base_model: bert-base-uncased
+  dropout: 0.1
+  freeze_base: false
+  hidden_dim: 768
+  num_tasks: 57
+  projection_dim: 256
+seed: 42
+training:
+  batch_size: 16
+  checkpoint:
+    mode: max
+    monitor: val_accuracy
+    save_best: true
+    save_last: true
+  early_stopping:
+    enabled: true
+    min_delta: 0.001
+    monitor: val_accuracy
+    patience: 3
+  gradient_accumulation_steps: 2
+  learning_rate: 2.0e-05
+  max_grad_norm: 1.0
+  mixed_precision: true
+  num_epochs: 10
+  scheduler:
+    num_cycles: 0.5
+    type: cosine
+  warmup_ratio: 0.1
+  weight_decay: 0.01

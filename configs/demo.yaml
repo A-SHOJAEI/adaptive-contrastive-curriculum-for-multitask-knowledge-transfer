@@ -1,0 +1,83 @@
+# Quick demo configuration for testing the pipeline
+experiment_name: "demo_quick_test"
+seed: 42
+
+# Model configuration
+model:
+  base_model: "bert-base-uncased"  # Changed from deberta-v3-base to avoid tokenizer dependency issues
+  hidden_dim: 768
+  projection_dim: 256
+  num_tasks: 57
+  dropout: 0.1
+  freeze_base: false
+
+# Data configuration - minimal for quick testing
+data:
+  dataset_name: "cais/mmlu"
+  subset: "all"
+  max_samples_per_task: 20  # Very small for quick demo
+  train_split: 0.7
+  val_split: 0.2
+  test_split: 0.1
+  max_seq_length: 256  # Shorter for speed
+  num_workers: 0
+
+# Curriculum learning
+curriculum:
+  enabled: true
+  warmup_epochs: 1
+  strategy: "uncertainty_gradient"
+  temperature: 2.0
+  update_frequency: 10
+  min_task_weight: 0.1
+  max_task_weight: 3.0
+
+# Contrastive learning
+contrastive:
+  enabled: true
+  temperature: 0.07
+  lambda_contrastive: 0.3
+  lambda_classification: 0.7
+  negative_samples: 4
+  inter_task_contrast: true
+
+# Training configuration - fast for demo
+training:
+  num_epochs: 2
+  batch_size: 8
+  gradient_accumulation_steps: 1
+  learning_rate: 0.00002
+  weight_decay: 0.01
+  warmup_ratio: 0.1
+  max_grad_norm: 1.0
+  mixed_precision: true
+
+  scheduler:
+    type: "cosine"
+    num_cycles: 0.5
+
+  early_stopping:
+    enabled: false
+    patience: 3
+    min_delta: 0.001
+    monitor: "val_accuracy"
+
+  checkpoint:
+    save_best: true
+    save_last: true
+    monitor: "val_accuracy"
+    mode: "max"
+
+# Evaluation
+evaluation:
+  batch_size: 16
+  metrics:
+    - "accuracy"
+    - "f1_macro"
+
+# Logging
+logging:
+  log_interval: 5
+  use_mlflow: false  # Disable for demo
+  use_tensorboard: false
+  save_dir: "results_demo"
