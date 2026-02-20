@@ -1,0 +1,23 @@
+{
+  "project": "Adaptive Contrastive Curriculum for Multi-task Knowledge Transfer",
+  "dataset": "MMLU (57 tasks)",
+  "model": "DeBERTa-v3-base (bert-base-uncased)",
+  "training": {
+    "num_epochs": 3,
+    "batch_size": 16,
+    "learning_rate": 2e-05,
+    "mixed_precision": true,
+    "early_stopping_patience": 3
+  },
+  "metrics": {
+    "best_val_accuracy": 0.2835,
+    "final_train_loss": 1.1663,
+    "final_val_loss": 1.0846,
+    "final_classification_loss": 1.4095,
+    "final_contrastive_loss": 0.3263,
+    "mean_task_accuracy": 0.2961,
+    "min_task_accuracy": 0.0,
+    "max_task_accuracy": 0.6364,
+    "uncertainty": 0.9468
+  }
+}
